@@ -8,6 +8,15 @@ CREATE TABLE Client (
 	provincia VARCHAR(45)
 ) ENGINE = INNODB;
 
+create view clientBcn
+	as select nom, poblacio from Client where provincia = 'Barcelona';
+    
+create view facturesClient
+AS SELECT F.codiFac, F.data, C.nom FROM Client C
+	INNER JOIN Factura F ON C.dni = F.clientDni;
+    
+select * from facturesClient;
+
 CREATE TABLE Article (
 	codiArt CHAR(11) PRIMARY KEY,
 	nom VARCHAR(45),
@@ -24,21 +33,17 @@ CREATE TABLE Factura (
         ON DELETE RESTRICT
 ) ENGINE = INNODB;
 
-CREATE TABLE LiniesFactura (
+CREATE TABLE Linia (
 	quant INT,
     facturaCodiFac CHAR(9), -- FK
     articleCodiArt CHAR(11), -- FK
-    CONSTRAINT fk_liniesFactura_factura FOREIGN KEY (facturaCodiFac) REFERENCES Factura(codiFac)
+    CONSTRAINT fk_linia_factura FOREIGN KEY (facturaCodiFac) REFERENCES Factura(codiFac)
 		ON UPDATE RESTRICT
         ON DELETE RESTRICT,
-	CONSTRAINT fk_liniesFactura_articles FOREIGN KEY (articleCodiArt) REFERENCES Article(codiArt)
+	CONSTRAINT fk_linia_articles FOREIGN KEY (articleCodiArt) REFERENCES Article(codiArt)
    		ON UPDATE RESTRICT
         ON DELETE RESTRICT
 ) ENGINE = INNODB;
-
-INSERT INTO Client VALUES ('DNI1','Nom1','Granollers','Barcelona'),('DNI2','Nom2','Canovelles','Barcelona'),('DNI3','Nom3','Mollet','Barcelona'),('DNI4','Nom4','Mont-ras','Girona'),('DNI5','Nom5','Palafrugell','Girona');
-INSERT INTO Article VALUES ('AAB-433/DZV','Article-1',17.54,'Sobretaula'),('AAB-931/SYK','Article-2',14.88,'Joguina'),('AAB-771/TCY','Article-3',15.43,'Pel·lícules'),('AAB-122/JUC','Article-4',66.58,'Joguina'),('AAB-999/TYH','Article-5',13.53,'Joguina'),('AAB-872/CQE','Article-6',84.17,'Pel·lícules'),('AAB-616/DFD','Article-7',61.98,'Pel·lícules'),('AAB-974/DWH','Article-8',47.42,'Videojocs'),('AAB-184/RSJ','Article-9',49.95,'Pel·lícules'),('AAB-818/SMH','Article-10',79.1,'Pel·lícules'),('AAB-768/XQW','Article-11',79.52,'Sobretaula'),('AAB-637/ZYJ','Orbe',400.96,'Sobretaula'),('AAB-639/YFP','Article-13',44.53,'Videojocs'),('AAB-917/CPP','Article-14',66.83,'Pel·lícules'),('AAB-252/BQB','Article-15',15.22,'Videojocs'),('AAB-917/RLS','Article-16',77.64,'Llibres'),('AAB-298/MOI','Article-17',41.81,'Llibres'),('AAB-228/PYV','Article-18',24.39,'Joguina'),('AAB-832/IVZ','Article-19',33.95,'Videojocs'),('AAB-959/VQF','Article-20',14.45,'Sobretaula'),('AAB-434/KPO','Article-21',71.81,'Joguina'),('AAB-817/IFS','Article-22',51.13,'Llibres'),('AAB-815/EIP','Article-23',5.97,'Sobretaula'),('AAB-596/ZOS','Article-24',57.26,'Sobretaula'),('AAB-557/ACL','Article-25',16.78,'Joguina'),('AAB-325/PAL','Article-26',45.99,'Sobretaula'),('AAB-726/VLX','Article-27',55.02,'Llibres'),('AAB-339/SPY','Article-28',36.33,'Joguina'),('AAB-285/TTT','Article-29',80.2,'Joguina'),('AAB-979/ABO','Article-30',87.16,'Joguina'),('AAB-688/DCQ','Article-31',74.86,'Videojocs'),('AAB-831/HED','Article-32',32.39,'Sobretaula'),('AAB-211/BEH','Article-33',38.08,'Joguina'),('AAB-675/GZB','Article-34',96.34,'Joguina'),('AAB-644/HMH','Article-35',64.02,'Joguina'),('AAB-447/TIN','Article-36',78.12,'Videojocs'),('AAB-668/QMZ','Article-37',98.22,'Llibres'),('AAB-612/MKD','Article-38',42.87,'Joguina'),('AAB-532/BJE','Article-39',27.31,'Joguina'),('AAB-685/JMF','Article-40',25.21,'Llibres'),('AAB-195/SBM','Article-41',84.51,'Joguina'),('AAB-576/UGD','Article-42',34.99,'Videojocs'),('AAB-935/UDZ','Article-43',69.2,'Sobretaula'),('AAB-646/OWX','Article-44',86.16,'Pel·lícules'),('AAB-856/NDE','Article-45',74.34,'Joguina'),('AAB-682/TCF','Article-46',75.17,'Pel·lícules'),('AAB-987/AAC','Article-47',98.46,'Sobretaula'),('AAB-456/MSO','Article-48',58.4,'Videojocs'),('AAB-873/ILL','Article-49',36.92,'Joguina'),('AAB-534/VTG','Article-50',64.44,'Pel·lícules'),('AAB-732/MHU','Article-51',48.97,'Joguina'),('AAB-384/LDF','Article-52',79.7,'Videojocs'),('AAB-142/QRD','Article-53',9.31,'Pel·lícules'),('AAB-594/GJA','Article-54',97.77,'Sobretaula'),('AAB-196/BAB','Article-55',86.45,'Videojocs'),('AAB-731/ITB','Article-56',32.74,'Pel·lícules'),('AAB-165/FVD','Article-57',45.91,'Videojocs'),('AAB-955/UWM','Article-58',95.79,'Videojocs'),('AAB-541/WAV','Article-59',34.85,'Pel·lícules'),('AAB-126/SDH','Article-60',91.9,'Videojocs'),('AAB-437/TYU','Article-61',73.57,'Joguina'),('AAB-698/MOA','Olollo',21.06,'Videojocs'),('AAB-236/MCZ','Article-63',75.28,'Pel·lícules'),('AAB-553/JIO','Article-64',69.77,'Videojocs'),('AAB-572/XIV','Article-65',91.26,'Videojocs'),('AAB-863/SVZ','Article-66',50.92,'Joguina'),('AAB-199/IMC','Article-67',38.59,'Videojocs'),('AAB-289/CUY','Article-68',77.38,'Joguina'),('AAB-194/SHI','Article-69',84.78,'Pel·lícules'),('AAB-555/GXL','Article-70',62.86,'Videojocs'),('AAB-556/CBY','Article-71',57.26,'Joguina'),('AAB-748/VCE','Ornitorrinco',38.77,'Llibres'),('AAB-349/HTE','Article-73',38.92,'Llibres'),('AAB-919/UXN','Article-74',89.06,'Pel·lícules'),('AAB-282/HNP','Article-75',7.03,'Llibres'),('AAB-519/TJV','Article-76',75.23,'Sobretaula'),('AAB-851/FQO','Article-77',56.11,'Sobretaula'),('AAB-732/XVE','Article-78',37.62,'Pel·lícules'),('AAB-861/UFQ','Article-79',73.49,'Joguina'),('AAB-812/KOM','Article-80',55.23,'Joguina'),('AAB-223/MPM','Article-81',11.74,'Joguina'),('AAB-635/YCO','Article-82',35.39,'Llibres'),('AAB-874/ZOD','Article-83',11.59,'Videojocs'),('AAB-487/DPJ','Article-84',21.47,'Pel·lícules'),('AAB-684/YJJ','Article-85',71.36,'Joguina'),('AAB-426/MHU','Article-86',68.29,'Pel·lícules'),('AAB-115/YHM','Article-87',26.12,'Pel·lícules'),('AAB-872/CMW','Article-88',45.6,'Llibres'),('AAB-744/XQX','Article-89',21.83,'Videojocs'),('AAB-595/JAR','Article-90',87.57,'Joguina'),('AAB-194/MZM','Article-91',18.14,'Llibres'),('AAB-658/VAL','Article-92',54.6,'Videojocs'),('AAB-712/PUW','Article-93',90.21,'Sobretaula'),('AAB-681/SGH','Article-94',42.89,'Joguina'),('AAB-148/VHN','Article-95',98.92,'Videojocs'),('AAB-416/DUA','Article-96',58.07,'Sobretaula'),('AAB-753/CVL','Article-97',75.2,'Llibres'),('AAB-854/WMA','Article-98',16.83,'Pel·lícules'),('AAB-628/ZUL','Article-99',23.87,'Pel·lícules'),('AAB-915/ARZ','Article-100',63.71,'Videojocs');
-INSERT INTO Factura VALUES ("203133/46","2015-07-30","DNI4"),("481715/62","2016-02-20","DNI4"),("874520/74","2016-07-06","DNI3"),("247725/94","2016-08-24","DNI4"),("790795/57","2014-12-19","DNI3"),("159504/33","2015-09-24","DNI3"),("264360/54","2016-09-04","DNI4"),("741874/69","2016-09-19","DNI3"),("094929/21","2015-01-21","DNI4"),("717511/17","2015-02-15","DNI4"),("292916/89","2015-01-10","DNI3"),("367285/72","2016-04-17","DNI4"),("778893/63","2014-12-07","DNI1"),("561572/88","2015-11-24","DNI3"),("749666/08","2016-11-21","DNI2"),("983506/50","2014-11-24","DNI3"),("149562/43","2016-02-08","DNI1"),("208930/98","2016-11-24","DNI2"),("064216/22","2015-04-05","DNI1"),("974980/13","2015-09-10","DNI4"),("809926/47","2015-06-06","DNI1"),("150185/94","2016-03-14","DNI1"),("785048/91","2015-08-09","DNI1"),("862076/02","2016-04-20","DNI4"),("079585/18","2015-11-05","DNI2"),("056835/84","2016-07-06","DNI4"),("358518/44","2015-03-07","DNI1"),("933133/36","2015-06-17","DNI2"),("723630/81","2015-12-28","DNI3"),("938071/51","2015-04-05","DNI2"),("029174/09","2015-09-10","DNI1"),("375951/73","2015-08-21","DNI3"),("883285/74","2015-10-19","DNI2"),("246883/20","2015-06-20","DNI4"),("349812/97","2015-11-01","DNI3"),("393904/52","2016-08-25","DNI4"),("934890/29","2015-05-05","DNI2"),("337625/54","2015-08-19","DNI1"),("822118/99","2015-07-09","DNI3"),("429943/02","2015-06-25","DNI2"),("308520/05","2016-01-17","DNI3"),("439777/59","2016-10-11","DNI1"),("102486/91","2016-06-30","DNI1"),("512981/58","2016-06-10","DNI2"),("778841/64","2016-01-19","DNI2"),("506113/10","2016-06-10","DNI2"),("677734/08","2016-11-22","DNI2"),("085948/35","2015-03-21","DNI2"),("752716/91","2015-07-15","DNI1"),("541510/18","2016-01-08","DNI4"),("850505/50","2016-11-13","DNI3"),("677410/42","2015-01-22","DNI3"),("992446/79","2016-07-22","DNI4"),("678037/16","2015-06-17","DNI2"),("067343/96","2016-07-18","DNI2"),("717069/74","2015-11-11","DNI4"),("855242/43","2015-03-02","DNI1"),("217529/39","2016-03-19","DNI3"),("602510/33","2015-01-05","DNI2"),("449368/85","2016-09-24","DNI3"),("314290/68","2016-10-18","DNI3"),("259729/52","2016-05-19","DNI3"),("383971/24","2015-03-03","DNI3"),("598427/79","2016-05-12","DNI2"),("350340/32","2015-09-17","DNI3"),("415581/59","2015-12-07","DNI1"),("128553/96","2015-04-09","DNI3"),("562341/78","2015-01-28","DNI2"),("671139/17","2015-12-26","DNI2"),("041758/65","2015-06-03","DNI4"),("285087/02","2015-05-14","DNI4"),("907691/67","2015-12-22","DNI2"),("201600/03","2015-02-11","DNI2"),("028319/88","2016-04-13","DNI2"),("019042/71","2015-12-31","DNI3"),("624051/22","2016-09-02","DNI2"),("680828/62","2016-11-22","DNI4"),("185133/06","2014-12-13","DNI2"),("658118/83","2015-09-18","DNI1"),("586704/92","2016-04-03","DNI1"),("220696/98","2016-08-21","DNI2"),("054791/03","2015-09-12","DNI1"),("217101/28","2016-11-05","DNI4"),("869933/37","2015-04-07","DNI3"),("356323/35","2016-04-21","DNI4"),("124933/64","2015-04-09","DNI2"),("137019/37","2015-08-11","DNI2"),("362572/44","2016-08-03","DNI1"),("803268/67","2015-01-09","DNI2"),("930186/24","2016-08-10","DNI3"),("207930/57","2015-01-10","DNI2"),("840466/04","2016-09-16","DNI2"),("247474/34","2016-06-01","DNI3"),("764310/81","2015-06-06","DNI3"),("138784/05","2015-07-24","DNI4"),("022592/56","2016-06-04","DNI2"),("346097/39","2015-09-18","DNI2"),("666778/26","2016-10-04","DNI1"),("813815/67","2015-08-02","DNI2"),("997727/76","2016-07-31","DNI2");
 
 
 -- 1. Obtenir un llistat de tots els clients de Granollers o Canovelles.
@@ -46,7 +51,7 @@ SELECT nom AS "Nom Client", poblacio AS Poblacio FROM Client
 	WHERE poblacio IN ('Granollers','Canovelles');
 
 -- 2. Obtenir el numero total de factures que té cada client amb el DNI i una altra columna amb el Nom i Cognom
-SELECT COUNT(*), C.nom AS "Nom Client", C.DNI AS "DNI CLient" FROM Factura F
+SELECT COUNT(*) AS 'Total Factures', C.nom AS "Nom Client", C.DNI AS "DNI CLient" FROM Factura F
 	INNER JOIN Client C ON C.dni = F.clientDNI
     GROUP BY C.DNI;
     
@@ -82,14 +87,12 @@ SELECT A.CodiArt AS "Codi d'Articles", A.nom AS "Nom d'Articles", LA.quant AS "Q
 -- 	INNER JOIN Factures F ON F.codiFac = LF.facturesCodiFac
 -- 	GROUP BY F.codiFac;
     
-SELECT SUM(A.preu*LF.quant) AS "Import Total" FROM Article A
-	INNER JOIN liniesFactura LF ON A.codiArt = LF.articleCodiArt
-	INNER JOIN Factura F ON F.codiFac = LF.facturaCodiFac;
+SELECT SUM(A.preu*L.quant) AS ImportTotal FROM Article A
+	INNER JOIN liniesFactura L ON A.codiArt = L.articleCodiArt;
     
 -- 9. Obtenir l'import facturat per a cada una de les famílies d'articles.
-SELECT SUM(A.preu*LF.quant) AS "Import Total", A.familia AS "Familia d'Article" FROM Article A
-	INNER JOIN liniesFactura LF ON A.codiArt = LF.articleCodiArt
-	INNER JOIN Factura F ON F.codiFac = LF.facturaCodiFac
+SELECT SUM(A.preu*L.quant) AS "Import Total", A.familia AS "Familia d'Article" FROM Article A
+	INNER JOIN liniesFactura L ON A.codiArt = L.articleCodiArt
     GROUP BY familia;
 
 -- 10. Obtenir la informació de tots els articles i la seva quantitat venuda. Obtindrem el valor NULL o 0 (zero) en el cas que el producte no hagi tingut cap venda.
@@ -101,10 +104,9 @@ SELECT A.nom AS 'Nom', CONCAT(A.preu,' €') AS 'Preu', A.familia AS 'Familia', 
 INSERT INTO Factura VALUES ('006746/15','2020-11-08','DNI5');
 INSERT INTO liniesFactura VALUES ('1','006746/15','AAB-955/UWM'),('1','006746/15','AAB-959/VQF'),('1','006746/15','AAB-974/DWH'),('1','006746/15','AAB-979/ABO'),('1','006746/15','AAB-987/AAC');
 
-SELECT SUM(A.preu*LF.quant) AS "Import", F.codiFac AS "Codi de Factura" FROM Article A
-	INNER JOIN liniesFactura LF ON A.codiArt = LF.articleCodiArt
-	INNER JOIN Factura F ON F.codiFac = LF.facturaCodiFac
-    WHERE F.codiFac = '006746/15';
+SELECT (A.preu*L.quant) AS Import, L.facturaCodiFac AS CodiFactura FROM Article A
+	INNER JOIN liniesFactura L ON A.codiArt = L.articleCodiArt
+    WHERE L.articleCodiArt = '006746/15';
 
 -- 12. Obtenir l'import facturat per a cada un dels clients que siguin de la ciutat de Girona. Cal ordenar el resultat de major a menor import.
 INSERT INTO Client VALUES ('DNI6','Nom6','Girona','Girona');
@@ -143,20 +145,92 @@ SELECT C.dni AS "DNI Client", C.nom AS "Nom Client", C.poblacio AS 'Poblacio', C
     INNER JOIN Article A ON  A.codiArt = LF.articleCodiArt;
 
 -- 15. Obtenir el total facturat per mes durant l'any 2015 i 2016. Ordenar el resultat per any i mes de forma descendent l’import.
-
-
+SELECT CONCAT((A.preu*LF.quant),' €') AS 'Facturat', YEAR(F.data), MONTH(F.data) FROM Factura F
+	INNER JOIN liniesFactura LF ON F.codiFac = LF.facturaCodiFac
+    INNER JOIN Article A ON A.codiArt = LF.articleCodiArt
+    ORDER BY YEAR(F.data) BETWEEN 2015 AND 2016 DESC;
+    
 -- 16. Obtenir quines factures tenen una facturació major a l'import mitjà de la facturació de la població de «Granollers».
+INSERT INTO Client VALUES ('DNI1','Nom1','Granollers','Barcelona'),('DNI2','Nom2','Canovelles','Barcelona'),('DNI3','Nom3','Mollet','Barcelona');
+-- 1 persona de Granollers. 2 Fuera de granollers.
+INSERT INTO Article VALUES ('AAB-433/DZV','Article-1',50.00,'Sobretaula'),('AAB-931/SYK','Article-2',20.00,'Joguina'),('AAB-771/TCY','Article-3',75.00,'Pel·lícules');
+-- Articulo 1, 50.00€. 		Articulo 2, 20.00€		Articulo 3, 75.00€
+INSERT INTO Factura VALUES ("000001/01","2015-07-06","DNI1"),("000002/01","2015-07-06","DNI2"),("000003/01","2015-07-06","DNI3");
+-- 1 Factura por cada cliente, total: 3.
+INSERT INTO Linia VALUES (2,'000001/01','AAB-433/DZV'),(2,'000002/01','AAB-931/SYK'),(2,'000003/01','AAB-771/TCY');
+-- Factura Cliente DNI1 de Granollers, 	2 Articulos, precio: 50.00 	Total: 50x2= 100.00€
+-- Factura Cliente DNI2, 				2 Articulos, precio: 25.00 	Total: 20x2=  40.00€
+-- Factura Cliente DNI3, 				2 Articulos, precio: 75.00	Total: 75x2= 150.00€
 
+-- Media de importe de Granollers: 50+50/2= 50
+
+-- Por lo tanto, factura del cliente DNI3 será superior. Cliente DNI será inferior y no saldrá.
+
+-- 1er Paso. SubSelect
+SELECT ROUND(SUM(A.preu*L.quant)/COUNT(DISTINCT F.codifac)) AS MitjaGranollers FROM Client C
+	INNER JOIN Factura F ON C.dni = F.clientDni
+	INNER JOIN liniesFactura L ON F.codiFac = L.facturaCodiFac
+	INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+    WHERE C.poblacio = 'Granollers';
+    
+-- 2do Paso. SubSelect
+SELECT A.preu AS FacturaSuperior, L.facturaCodiFac AS CodiFactura FROM linia L
+    INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+    GROUP BY L.facturaCodiFac
+    HAVING SUM(A.preu*L.quant) > (SELECT ROUND(SUM(A.preu*L.quant)/COUNT(DISTINCT F.codifac)) AS MitjaGranollers FROM Client C
+			INNER JOIN Factura F ON C.dni = F.clientDni
+			INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
+			INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+			WHERE C.poblacio = 'Granollers'); 
+            
+-- Probando cosas nuevas.
+-- UPDATE Client SET nom='RofoldoAurelio' WHERE dni='DNI1';
 
 -- 17. Obtenir tots els articles dels quals no s'hagi venut cap unitat.
-
+SELECT A.nom "Nom d'Article", COALESCE(LF.articleCodiArt) AS "Articles en Factures" FROM Article A
+LEFT JOIN liniesFactura LF ON A.codiArt = LF.articleCodiArt
+WHERE LF.articleCodiArt IS NULL;
 
 -- 18. Obtenir el dni i el nom de tots els clients que no tinguin cap factura.
+INSERT INTO Client VALUES ('DNI4','Nom4','Barcelona','Barcelona');
 
+SELECT DISTINCT C.dni, C.nom FROM Client C
+LEFT JOIN Factura F ON C.dni= F.clientDni
+WHERE F.clientDni IS NULL;
 
 -- 19. Digues el DNI i el nom del client que ha fet la factura més cara.
+-- OPCIÓN 1, LIMIT.
+SELECT C.nom AS Nom, C.dni AS DNI, SUM(A.preu*L.quant) AS Preu, F.codiFac AS FacturaMesCara FROM Client C
+			INNER JOIN Factura F ON C.dni = F.clientDni
+			INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
+			INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+            GROUP BY F.codiFac
+            ORDER BY MAX(A.preu) DESC LIMIT 1;
 
+-- OPCIÓN 2, HAVING.
+SELECT C.nom AS Nom, C.dni AS DNI, SUM(A.preu*L.quant) AS Import, F.codiFac AS FacturaMesCara FROM Client C
+			INNER JOIN Factura F ON C.dni = F.clientDni
+			INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
+			INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+            GROUP BY F.codiFac
+            HAVING Import = (SELECT MAX(A.preu*L.quant) FROM Client C
+					INNER JOIN Factura F ON C.dni = F.clientDni
+					INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
+					INNER JOIN Article A ON A.codiArt = L.articleCodiArt);
+     
+-- OPCIÓN 3, VIEW.
+-- SELECT * FROM VWImport;
+CREATE VIEW VWImport
+	AS SELECT F.codiFac, SUM(A.preu*L.quant) AS Import FROM Client C
+						INNER JOIN Factura F ON C.dni = F.clientDni
+						INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
+						INNER JOIN Article A ON A.codiArt = L.articleCodiArt
+						GROUP BY F.codiFac;
+                        
+SELECT codiFac, Import FROM VWImport WHERE Import = (SELECT MAX(Import) FROM VWImport);
 
 -- 20. A partir d’ara es vol tenir el control de la categoria el qual pertany un article. 
 	-- De la categoria es vol emmagatzemar, el nom de la categoria, si aquesta categoria té data de 
 	-- caducitat i el tipus de risc que va entre 1 y 10 (per defecte és 5). Realitza les instruccions necessàries per tal de poder resoldre aquest nou requeriment.
+    
+    
