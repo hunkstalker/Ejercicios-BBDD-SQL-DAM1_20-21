@@ -1,63 +1,63 @@
-create database FCT;
-use FCT;
+CREATE DATABASE FCT;
+USE FCT;
 
-create table if not exists Curs(
-	codi varchar(4),
-	nom varchar(50),
-	durada int,
-	categoria varchar(20),
-	primary key(codi)
-) engine=InnoDB;
+CREATE TABLE IF NOT EXISTS Curs(
+	codi VARCHAR(4),
+	nom VARCHAR(50),
+	durada INT,
+	categoria VARCHAR(20),
+	PRIMARY KEY(codi)
+) ENGINE=INNODB;
 
-create table if not exists Poblacio(
-	CP char(5),
-	ciutat varchar(20),
-	provincia varchar(20),
-	primary key(cp)
-) engine=InnoDB;
+CREATE TABLE IF NOT EXISTS Poblacio(
+	CP CHAR(5),
+	ciutat VARCHAR(20),
+	provincia VARCHAR(20),
+	PRIMARY KEY(cp)
+) ENGINE=INNODB;
 
-create table if not exists Alumne(
-	DNI char(9),
-	nom varchar(20),
-	cognom varchar(30),
-	adreca varchar(30),
-	duradaFCT int,
-	poblacioCP char(5),
-	cursCodi varchar(4),
-	primary key(DNI),
-	constraint fk_alumne_curs foreign key (cursCodi) references curs(codi)
-		on update cascade on delete restrict,
-	constraint fk_alumne_poblacio foreign key (poblacioCP) references poblacio(CP)
-		on update cascade on delete set null
-) engine=InnoDB;
+CREATE TABLE IF NOT EXISTS Alumne(
+	DNI CHAR(9),
+	nom VARCHAR(20),
+	cognom VARCHAR(30),
+	adreca VARCHAR(30),
+	duradaFCT INT,
+	poblacioCP CHAR(5),
+	cursCodi VARCHAR(4),
+	PRIMARY KEY(DNI),
+	CONSTRAINT fk_alumne_curs FOREIGN KEY (cursCodi) REFERENCES curs(codi)
+		ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT fk_alumne_poblacio FOREIGN KEY (poblacioCP) REFERENCES poblacio(CP)
+		ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=INNODB;
 
-create table if not exists Empresa(
-	CIF char(9),
-	nom varchar(20),
-	adreca varchar(30),
-	responsable varchar(20),
-	qttTreballadors int,
-	poblacioCP char(5), -- FK
-	primary key(CIF),
-	constraint fk_empresa_poblacio foreign key (poblacioCP) references poblacio(CP)
-		on update cascade
-		on delete set null
-) engine=InnoDB;
+CREATE TABLE IF NOT EXISTS Empresa(
+	CIF CHAR(9),
+	nom VARCHAR(20),
+	adreca VARCHAR(30),
+	responsable VARCHAR(20),
+	qttTreballadors INT,
+	poblacioCP CHAR(5), -- FK
+	PRIMARY KEY(CIF),
+	CONSTRAINT fk_empresa_poblacio FOREIGN KEY (poblacioCP) REFERENCES poblacio(CP)
+		ON UPDATE CASCADE
+		ON DELETE SET NULL
+) ENGINE=INNODB;
 
-create table if not exists Conveni(
-	dataInici date,
-	dataFinal date,
-	durada int,
-	alumneDNI char(9), -- FK
-	empresaCIF char(9), -- FK
-	primary key(alumneDNI,empresaCIF,dataInici),
-	constraint fk_conveni_alumne foreign key (alumneDNI) references alumne(DNI)
-		on update cascade
-		on delete restrict,
-	constraint fk_conveni_empresa foreign key (empresaCIF) references empresa(CIF)
-		on update cascade
-			on delete cascade
-) engine=InnoDB;
+CREATE TABLE IF NOT EXISTS Conveni(
+	dataInici DATE,
+	dataFinal DATE,
+	durada INT,
+	alumneDNI CHAR(9), -- FK
+	empresaCIF CHAR(9), -- FK
+	PRIMARY KEY(alumneDNI,empresaCIF,dataInici),
+	CONSTRAINT fk_conveni_alumne FOREIGN KEY (alumneDNI) REFERENCES alumne(DNI)
+		ON UPDATE CASCADE
+		ON DELETE RESTRICT,
+	CONSTRAINT fk_conveni_empresa FOREIGN KEY (empresaCIF) REFERENCES empresa(CIF)
+		ON UPDATE CASCADE
+			ON DELETE CASCADE
+) ENGINE=INNODB;
 
 -- 1. S’ha donat d’alta l’alumne “Maria Garcia” de Mollet (08102) amb DNI: “11223344Z” al curs de SMX. L’alumne té una exempció d’un 50%.
 INSERT INTO Poblacio VALUES ("08104","Mollet","Barcelona"),("08100","Mollet","Barcelona");
@@ -76,7 +76,7 @@ INSERT INTO Conveni VALUES ("2019-11-04",NULL,100,"DNI2","CIF2"),("2021-10-01",N
 SELECT COUNT(Co.empresaCIF) AS "Qtt d'Empreses", Cu.categoria AS "Categoría Curs" FROM Conveni Co
 	INNER JOIN Alumne A ON A.dni = Co.alumnedni
 	INNER JOIN Curs Cu ON Cu.codi = A.cursCodi
-    WHERE Co.dataInici <= now()
+    WHERE Co.dataInici <= NOW()
     GROUP BY Cu.categoria;
 
 -- 3. Cal mostrar un llistat d’alumnes (nom i cognom) que tenen algun tipus d’exempció. Mostra la informació per cicle.
@@ -119,7 +119,7 @@ SELECT CONCAT(A.nom," ",A.cognom) AS "Nom Complet", Cu.nom AS "Nom Curs", Cu.cod
 	INNER JOIN Alumne A ON Cu.codi = A.cursCodi
     INNER JOIN Conveni Co ON A.dni = Co.alumneDni
     WHERE Cu.codi IN ("0001") OR ("0002")
-    AND YEAR(Co.dataInici)=YEAR(now())
+    AND YEAR(Co.dataInici)=YEAR(NOW())
     ORDER BY Cu.nom;
 
 -- 7. Es vol determinar quina és la quantitat de convenis que hi ha per categoria.
@@ -135,7 +135,7 @@ SELECT COUNT(*) AS "Qtt de Convenis", Cu.categoria AS "Categoría Curs" FROM Con
 INSERT INTO Poblacio VALUES ("08430","La Roca del Vallès","Barceloa"),("08207","Sabadell","Barcelona");
 INSERT INTO Alumne VALUES ("12345678Z","Marc","González",NULL,NULL,"08430","0002");
 INSERT INTO Empresa VALUES ("B1234568","Google Spain",NULL,NULL,120,"08207");
-INSERT INTO Conveni VALUES (DATE(now()),"2021-03-12",135,"12345678Z","B1234568");
+INSERT INTO Conveni VALUES (DATE(NOW()),"2021-03-12",135,"12345678Z","B1234568");
 
 -- 9. Es vol veure els dies de mitja que hi ha per conveni de les empreses.
 -- Ex: Si tenim l’empresa Google que un alumne de DAM ha fet 10 dies i un alumne de SMX ha fet 5, el total de dies d’aquesta empresa és: 7,50. Considerem que es compten els caps de setmana.
@@ -193,7 +193,7 @@ SELECT COUNT(E.nom) AS "Qtt d'Empresas", Co.empresaCIF AS "CIF d'Empresa" FROM E
 SELECT Cu.nom AS "Nom Curs", Co.dataInici AS "Data Inici" FROM Curs Cu 
 	INNER JOIN Alumne A ON Cu.codi = A.cursCodi
     INNER JOIN Conveni Co ON A.DNI = Co.alumneDNI
-    WHERE YEAR(Co.dataInici) = YEAR(now())
+    WHERE YEAR(Co.dataInici) = YEAR(NOW())
 	HAVING Co.dataInici > 5
     ORDER BY Cu.nom;
 

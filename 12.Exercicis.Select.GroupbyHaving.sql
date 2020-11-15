@@ -175,20 +175,53 @@ SELECT MAX(Quantitat), Ciutat FROM v_Preci_to_Poblacio
     GROUP BY Ciutat
     HAVING Ciutat IN ('Granollers','Barcelona','Tarragona','Lleida','Girona');
 
--- CONSULTA NORMAL
+-- CONSULTA NORMAL A
 SELECT MAX(Pre.quantitat) AS Precipitació, Po.ciutat AS Ciutat FROM Precipitacio Pre
 	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
 	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal
     GROUP BY Po.ciutat
     HAVING Po.ciutat IN ('Granollers','Barcelona','Tarragona','Lleida','Girona');
 
+-- CONSULTA NORMAL B
+SELECT MAX(Pre.quantitat) AS Precipitació, Po.ciutat AS Ciutat FROM Precipitacio Pre
+	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
+	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal
+	WHERE Po.ciutat IN ('Granollers','Barcelona','Tarragona','Lleida','Girona')
+    GROUP BY Po.ciutat;
+
 -- 10. Determina la precipitació total per a cada un dels anys a Barcelona durant el mes de febrer.
+-- CONSULTA AMB VISTA
+SELECT SUM(Quantitat) AS Precipitació, Ciutat, YEAR(Data) AS Any FROM v_preci_to_poblacio
+    WHERE Ciutat = 'Sabadell'
+    GROUP BY YEAR(Data), Ciutat;
 
+-- CONSULTA NORMAL A
+SELECT SUM(Pre.quantitat) AS Precipitació, Po.ciutat AS Ciutat, YEAR(Pre.dataP) AS Any FROM Precipitacio Pre
+	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
+	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal
+    WHERE Po.ciutat = 'Sabadell'
+    GROUP BY YEAR(Pre.dataP), Po.ciutat;
 
--- 11. Fer una consulta que mostri: A la ciutat de «ciutat» en el mes «mes» ha plogut «x» en format
--- «format».
-
--- 12. Determina quins sinistres tenen un cost superior al sinistre amb nom ‘Inundació’.
+-- CONSULTA NORMAL B
+SELECT SUM(Pre.quantitat) AS Precipitació, Po.ciutat AS Ciutat, YEAR(Pre.dataP) AS Any FROM Precipitacio Pre
+	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
+	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal
+	GROUP BY YEAR(Pre.dataP), Po.ciutat
+    HAVING Po.ciutat = 'Sabadell';
+    
+-- 11. Fer una consulta que mostri: A la ciutat de «ciutat» en el mes «mes» ha plogut «x» en format «format».
+-- CONSULTA AMB VISTA
+SELECT Ciutat, MONTHNAME(Data) AS Mes, CONCAT(Quantitat) AS Precipitació, Tipus FROM v_preci_to_poblacio
+	GROUP BY Ciutat, MONTHNAME(Data), Precipitació, Tipus;
+    
+-- CONSULTA NORMAL
+SELECT Po.ciutat AS Ciutat, MONTHNAME(Pre.dataP) AS Mes, CONCAT(Pre.quantitat,' l/m2') AS Precipitació, P.precipitacioTipus AS Tipus FROM Precipitacio Pre
+	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
+	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal
+	GROUP BY Po.ciutat, MONTHNAME(Pre.dataP), Precipitació, Tipus;
+	
+-- 12. Determina quins sinistres tenen un cost superior al sinistre amb nom ‘Inhundació’.
+SELECT Si.nom, Si.cost FROM Sinistre Si;
 
 -- 13. Determina la mitjana de precipitació de cada una de les ciutats de Granollers i Barcelona que
 -- no sigui de tipus pedra.
