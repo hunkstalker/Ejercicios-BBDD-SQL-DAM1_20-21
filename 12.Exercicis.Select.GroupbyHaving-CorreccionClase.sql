@@ -81,8 +81,8 @@ CREATE VIEW V_Sinistre (Numero, Nom, Gravetat, Cost, CP, Data, Tipus)
 AS SELECT Si.*, P.poblacioCodiPostal, P.precipitacioDataP, P.precipitacioTipus FROM Sinistre Si
 	INNER JOIN PPS P ON Si.num = P.sinistreNum;
     
-CREATE VIEW V_Preci_to_Poblacio (Data, Tipus, Quantitat, Durada, CP, NoSinistre, Ciutat, Provincia)
-AS SELECT Pre.*, P.poblacioCodiPostal, P.sinistreNum, Po.ciutat, Po.provincia FROM Precipitacio Pre
+CREATE VIEW V_Preci_to_Poblacio AS
+SELECT Pre.*, P.*, Po.* FROM Precipitacio Pre
 	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
     INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal;
   
@@ -91,6 +91,7 @@ AS SELECT Pre.*, Si.num, Si.nom, Si.gravetat, Si.Cost, Po.codiPostal, Po.ciutat,
 	INNER JOIN PPS P ON Pre.dataP = P.precipitacioDataP
     INNER JOIN Sinistre Si ON Si.num = P.sinistreNum
 	INNER JOIN Poblacio Po ON Po.codiPostal = P.poblacioCodiPostal;
+
       
 -- 1. Determina la precipitació total segons l'any en què s'ha produït.
 SELECT SUM(quantitat) AS Quantitat, dataP AS Data FROM Precipitacio
@@ -152,9 +153,8 @@ SELECT CONCAT(ROUND((SUM(Pre.quantitat/Pre.durada)/COUNT(Pre.dataP)),2),' l/m2')
     
 -- 7. Mostra quines ciutats tenen més precipitació de tipus neus que la població de Cardedeu. Utilitza una vista per la població de Cardedeu.
 SELECT Ciutat, CAST(CONCAT(SUM(Quantitat),' l/m2')AS CHAR) AS Precipitació, Tipus FROM V_Preci_to_Poblacio
-WHERE Tipus = 'n'
 GROUP BY Ciutat, Tipus
-HAVING Precipitació > (SELECT SUM(Quantitat) FROM V_Preci_to_Poblacio WHERE Ciutat = 'Cardedeu' AND Tipus ='n');
+HAVING Tipus = 'n' AND SUM(Quantitat) > (SELECT SUM(Quantitat) FROM V_Preci_to_Poblacio WHERE Ciutat = 'Cardedeu' AND Tipus ='n');
 
 -- 8. Mostra la quantitat total de precipitació de totes les ciutats que continguin al seu nom les lletres NA i que no continguin BA i a mes hagin tingut un sinistre amb gravetat entre 5 i 10.
 -- CONSULTA AMB VISTA
