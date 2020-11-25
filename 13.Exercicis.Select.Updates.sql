@@ -274,6 +274,12 @@ AS SELECT L.titol, G.nom, COUNT(*) FROM genere G
 		INNER JOIN prestecs P ON L.ISBN = P.llibreISBN
 		GROUP BY P.llibreISBN
         ORDER BY L.titol;
+        
+SELECT L.titol, G.nom, COUNT(*) FROM genere G
+		INNER JOIN llibre L ON G.codi = L.genereCodi
+		INNER JOIN prestecs P ON L.ISBN = P.llibreISBN
+		GROUP BY P.llibreISBN
+        ORDER BY L.titol;
 
 SELECT Titol, Genere, MAX(TotalPrestecs) FROM V_TotalPrestecs;
 
