@@ -1,6 +1,6 @@
-DROP SCHEMA IF EXISTS exercici06_UpdateDeletes;
-CREATE SCHEMA IF NOT EXISTS exercici06_UpdateDeletes;
-USE exercici06_UpdateDeletes;
+DROP SCHEMA IF EXISTS exercici06;
+CREATE SCHEMA IF NOT EXISTS exercici06;
+USE exercici06;
 
 CREATE TABLE IF NOT EXISTS Article (
 	codi CHAR(5),
@@ -45,16 +45,16 @@ INSERT INTO emmagatzema VALUES("ART1","MAG1",100,30),("ART1","MAG2",200,30),
     
 
 -- Fer una cópia de seguretat de la base de dades original.
-CREATE DATABASE exercici06_UpdateDeletesBACK;
-USE exercici06_UpdateDeletesBACK;
+-- CREATE DATABASE exercici06_UpdateDeletesBACK;
+-- USE exercici06_UpdateDeletesBACK;
 
-CREATE TABLE Article LIKE exercici06_deletes.Article;
-CREATE TABLE Magatzem LIKE exercici06_deletes.magatzem;
-CREATE TABLE Emmagatzema LIKE exercici06_deletes.emmagatzema;
+-- CREATE TABLE Article LIKE exercici06_deletes.Article;
+-- CREATE TABLE Magatzem LIKE exercici06_deletes.magatzem;
+-- CREATE TABLE Emmagatzema LIKE exercici06_deletes.emmagatzema;
 
-INSERT INTO Article SELECT * FROM exercici06_deletes.Article;
-INSERT INTO Magatzem SELECT * FROM exercici06_deletes.magatzem;
-INSERT INTO Emmagatzema SELECT * FROM exercici06_deletes.emmagatzema;
+-- INSERT INTO Article SELECT * FROM exercici06_deletes.Article;
+-- INSERT INTO Magatzem SELECT * FROM exercici06_deletes.magatzem;
+-- INSERT INTO Emmagatzema SELECT * FROM exercici06_deletes.emmagatzema;
 
 -- 1 Incrementar tots els preus un 10%.
 SELECT * FROM Emmagatzema;
@@ -101,8 +101,8 @@ SELECT * FROM Article;
 SELECT * FROM Magatzem;
 SELECT * FROM Emmagatzema;
 
-USE exercici06_deletes;
-ALTER TABLE Emmagatzema DROP FOREIGN KEY fk_emmagatzema_magatzem;
-ALTER TABLE Emmagatzema ADD CONSTRAINT fk_emmagatzema_magatzem FOREIGN KEY (magatzemCodi) REFERENCES Magatzem(codi)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT;
+-- USE exercici06_deletes;
+-- ALTER TABLE Emmagatzema DROP FOREIGN KEY fk_emmagatzema_magatzem;
+-- ALTER TABLE Emmagatzema ADD CONSTRAINT fk_emmagatzema_magatzem FOREIGN KEY (magatzemCodi) REFERENCES Magatzem(codi)
+--         ON UPDATE CASCADE
+--         ON DELETE RESTRICT;

@@ -1,5 +1,5 @@
-CREATE DATABASE DBArxius;
-USE DBArxius;
+CREATE DATABASE exercici9;
+USE exercici9;
 
 CREATE TABLE IF NOT EXISTS Usuari (
 	login CHAR(45) PRIMARY KEY,

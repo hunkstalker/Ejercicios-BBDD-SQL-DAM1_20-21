@@ -1,0 +1,24 @@
+CREATE DATABASE Test;
+USE Test;
+
+CREATE TABLE Alumne(
+    DNI CHAR(9) PRIMARY KEY,
+    nom VARCHAR(20),
+    edad tinyint
+) ENGINE = INNODB;
+
+INSERT INTO Alumne VALUES ('DNI1','Maria',25);
+INSERT INTO Alumne VALUES ('DNI2','Marc',30);
+INSERT INTO Alumne VALUES ('DNI3','Santiago',19);
+
+LOCK TABLE alumne WRITE;
+INSERT INTO alumne VALUES ('DNI4','Pepe',30);
+INSERT INTO alumne VALUES ('DNI5','Paco',25);
+UNLOCK TABLE;
+
+LOCK TABLE alumne READ;
+SELECT COUNT(*) FROM alumne;
+SELECT MIN(edad) FROM alumne;
+UNLOCK TABLE;
+
+SHOW processlist;

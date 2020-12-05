@@ -97,7 +97,7 @@ SELECT SUM(A.preu*L.quant) AS ImportTotal FROM Article A
 	INNER JOIN linia L ON A.codiArt = L.articleCodiArt;
     
 -- 9. Obtenir l'import facturat per a cada una de les famílies d'articles.
-SELECT SUM(A.preu*L.quant) AS "Import Total", A.familia AS "Familia d'Article" FROM Article A
+SELECT CONCAT(SUM(A.preu*L.quant),' €') AS "Import Total", A.familia AS "Familia d'Article" FROM Article A
 	INNER JOIN linia L ON A.codiArt = L.articleCodiArt
     GROUP BY familia;
 
@@ -112,7 +112,7 @@ SELECT (A.preu*L.quant) AS Import, L.facturaCodiFac AS CodiFactura FROM Article 
     WHERE L.articleCodiArt = '006746/15';
 
 -- 12. Obtenir l'import facturat per a cada un dels clients que siguin de la ciutat de Girona. Cal ordenar el resultat de major a menor import.
-SELECT SUM(A.preu*L.quant) AS "Import", C.dni AS 'Client', C.poblacio AS 'Poblacio' FROM Article A
+SELECT CONCAT(SUM(A.preu*L.quant),' €') AS "Import", C.dni AS 'Client', C.poblacio AS 'Poblacio' FROM Article A
 	INNER JOIN linia L ON A.codiArt = L.articleCodiArt
 	INNER JOIN Factura F ON F.codiFac = L.facturaCodiFac
     INNER JOIN Client C ON C.DNI = F.clientDNI
@@ -121,17 +121,20 @@ SELECT SUM(A.preu*L.quant) AS "Import", C.dni AS 'Client', C.poblacio AS 'Poblac
 SELECT * from linia;
 
 -- 13. Obtenir el codi i la data de totes les factures amb un import superior al de la factura 006746/15.
-SELECT F.codiFac AS "Codi Factura", data AS "Data", SUM(A.preu*L.quant) FROM Article A
+SELECT F.codiFac AS "Codi Factura", data AS "Data", CONCAT(SUM(A.preu*L.quant),' €') AS Import FROM Article A
 	INNER JOIN linia L ON A.codiArt = L.articleCodiArt
 	INNER JOIN Factura F ON F.codiFac = L.facturaCodiFac
     GROUP BY F.codiFac
-    HAVING SUM(A.preu*L.quant) > (SELECT SUM(A.preu*L.quant) FROM Article A
+    HAVING Import < (SELECT SUM(A.preu*L.quant) FROM Article A
 			INNER JOIN linia L ON A.codiArt = L.articleCodiArt
 			INNER JOIN Factura F ON F.codiFac = L.facturaCodiFac
             WHERE F.codiFac = '006746/15');
             
+-- INSERT INTO linia VALUES ('3','006746/15','AAB-433/DZV'),('2','006746/15','AAB-931/SYK');
+-- SELECT * FROM linia;
+
 -- Comprobació, factura 006746/15, Import: 343.28 €
-SELECT F.codiFac AS "Codi Factura", data AS "Data", SUM(A.preu*L.quant) AS "Import" FROM Article A
+SELECT F.codiFac AS "Codi Factura", data AS "Data", CONCAT(SUM(A.preu*L.quant),' €') AS "Import" FROM Article A
 	INNER JOIN linia L ON A.codiArt = L.articleCodiArt
 	INNER JOIN Factura F ON F.codiFac = L.facturaCodiFac
     WHERE F.codiFac = '006746/15';
@@ -151,7 +154,7 @@ SELECT CONCAT((A.preu*L.quant),' €') AS 'Facturat', YEAR(F.data), MONTH(F.data
     
 -- 16. Obtenir quines factures tenen una facturació major a l'import mitjà de la facturació de la població de «Granollers».
 -- 1er Paso. SubSelect
-SELECT ROUND(SUM(A.preu*L.quant)/COUNT(DISTINCT F.codifac)) AS MitjaGranollers FROM Client C
+SELECT CONCAT(ROUND(SUM(A.preu*L.quant)/COUNT(DISTINCT F.codifac)), ' €') AS MitjaGranollers FROM Client C
 	INNER JOIN Factura F ON C.dni = F.clientDni
 	INNER JOIN linia L ON F.codiFac = L.facturaCodiFac
 	INNER JOIN Article A ON A.codiArt = L.articleCodiArt

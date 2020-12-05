@@ -1,5 +1,5 @@
-CREATE DATABASE FCT;
-USE FCT;
+CREATE DATABASE exercici11;
+USE exercici11;
 
 CREATE TABLE IF NOT EXISTS Curs(
 	codi VARCHAR(4),
@@ -71,7 +71,7 @@ INSERT INTO Poblacio VALUES ("601-8","Minami Ward","Kyoto");
 INSERT INTO Empresa VALUES ("22441616G","Nintendo","Minami Ward","Fusajiro Yamauchi",5120,"601-8");
 INSERT INTO Curs VALUES ("0002","DAM1","420","Programació");
 INSERT INTO Alumne VALUES ("DNI2","Denis","Anfruns","Calle24","336","08100","0002");
-INSERT INTO Conveni VALUES ("2019-11-04",NULL,100,"DNI2","CIF2"),("2021-10-01",NULL,50,"DNI3","CIF2");
+-- INSERT INTO Conveni VALUES ("2019-11-04",NULL,100,"DNI2","CIF2"),("2021-10-01",NULL,50,"DNI3","CIF2");
 
 SELECT COUNT(Co.empresaCIF) AS "Qtt d'Empreses", Cu.categoria AS "Categoría Curs" FROM Conveni Co
 	INNER JOIN Alumne A ON A.dni = Co.alumnedni

@@ -169,7 +169,7 @@ DELETE T.* FROM tram T
     WHERE R.cporigen = '08430';
 
 -- 14. Per error el conductor 'Marcel Parra' del camió amb matricula '1234GTS' va fer la ruta 666, 50 minuts més dels que es van fer.
-UPDATE Concudctor Co
+UPDATE Conductor Co
 INNER JOIN Camio Ca ON Co.DNI = Ca.conductorDNI
 INNER JOIN Fa ON Ca.matricula = Fa.camioMatricula
 SET Fa.temps = Fa.temps +50
@@ -178,15 +178,22 @@ WHERE Co.nom = 'Marcel Parra' AND Ca.matricula = '1234GTS' AND Fa.codiRuta = '66
 -- 15.Es volen eliminar tots aquells camions que estiguin de baixa o aquells que els seus conductors on el seu número de telèfon acabi en 56.
 
 SELECT * FROM Conductor;
-BEGIN;
-	INSERT INTO conductor VALUES ('21654987z','Narcis López','TELF6');
-	SAVEPOINT A;
-	INSERT INTO conductor VALUES ('21654987z','Narcis López','TELF6');
-COMMIT;
+-- BEGIN;
+-- 	INSERT INTO conductor VALUES ('21654987z','Narcis López','TELF6');
+-- 	SAVEPOINT A;
+-- 	INSERT INTO conductor VALUES ('21654987z','Narcis López','TELF6');
+-- COMMIT;
 
 -- 16. Volem saber el nom del conductor de camions que tenen un camions amb més consum que la mitja de camions.
+
+
 -- 17.Escriu les instruccions necessàries per tal de que en cas que s'elimini o actualitzi la matricula d'un camió, quedin modificades la resta de dades per tal de que no hi hagin dades inconsistents.
 -- 18.Es vol saber quina és la ruta que és mes cara a nivell de peatges.
+SELECT T.rutaCodi, SUM(T.cost_peatge) FROM Tram T
+	GROUP BY T.cost_peatge
+	ORDER BY T.cost_peatge LIMIT 1;
+
+
 -- 19.Volem eliminar aquells viatges que han s'han fet durant el 2010 i 2013 dels conductors amb DNI 12345678A d'aquells trams que iniciïn en el codi postal 08420.
 -- 20.Ets responsable de la introducció de dades en SQL. Quines son les instruccions que faries servir en cas que passes tot això:
 		-- a) Insertes un camió de 1300kg i consum 34.22 amb matricula 56788FGT d'en Gerard Martínez.
@@ -194,10 +201,26 @@ COMMIT;
 		-- c) Et diuen al final que no.. que no cal introduir aquestes dades. (No utilitzar DELETE).
 		-- d) Ara sí, et diuen que SEGUR has de posar camió de 1100kg i consum 24.22 amb matricula 1234FGT d'en Raúl Lorca.
 		-- e) Has d'assegurar-te que aquesta instrucció no es podrà revocar.
+	SET AUTOCOMMIT = 0;
+--     INSERT INTO conductor... Gerard
+--     INSERT INTO camio...
+    UPDATE camio SET matricula = '56788FGT' WHERE matricula = '56788FGT';
+    ROLLBACK;
+--     INSERT conductor... Lorca
+--     INSERT camio...
+	COMMIT;
+
 -- 21.Crea una vista per tal de tenir un resum global per rutes del total de costos de peatge, distancia i que val en € cada kilòmetre degut al cost dels peatges.
+SELECT R.codi, SUM(T.cost_peatge), SUM(distancia), ROUND(SUM(cost_peatge)/SUM(distancia),2) AS CostKm
+	FROM Tram
+	GROUP BY rutaCodi;
+
 -- S’haurà de mostrar la informació de la següent forma:
 -- MIRAR PDF...
 -- 22.En Marcel Parra ahir va tenir un accident mortal. En honor a ell, s’ha decidit tancar (eliminar) tots els trams que ahir va fer.
--- 23.Volem eliminar aquells viatges que han s'han fet durant el mes de maig del 2016 i durant el dia 18-06-2013 dels conductors que el nom comença amb A i d'aquells trams que el seu codi postal d'inici sigui 08420.
+-- 23.Volem eliminar aquells viatges que han s'han fet durant el mes de maig del 2016 i durant el dia 18-06-2013 dels conductors que el 
+-- nom comença amb A i d'aquells trams que el seu codi postal d'inici sigui 08420.
+
+
 -- 24.Volem eliminar tots aquells camions que el seu tonatge sigui major de 1000 i que estiguin donats de baixa.
 -- 25.Es vol eliminar els trams on el seu cost de peatge sigui més elevat.
