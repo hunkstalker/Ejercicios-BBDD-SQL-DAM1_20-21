@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS poblacio (
 	nom VARCHAR(30)
 ) ENGINE = INNODB;
 
-
 CREATE TABLE IF NOT EXISTS propietari (
 	dni CHAR(9) PRIMARY KEY,
     nom VARCHAR(20) NOT NULL,
@@ -103,17 +102,19 @@ CREATE TABLE IF NOT EXISTS mao(
         ON DELETE RESTRICT
 ) ENGINE=INNODB;
 
-SHOW INDEX FROM metge;
-ALTER TABLE Metge DROP INDEX ImetgeNom;
-CREATE INDEX ImetgeNom ON Metge(nom);
-
 
 -- INSERCIO
 -- El dia 15/3/2016 es va fer una operació de catarates al gos “Bobby” amb xip “BC1234567” . 
 -- L’operació la va realitzar el metge “Smith” amb DNI 45397854-X i va durar 30 minuts. 
 -- El propietari del gos és l'Anna Quiroz amb DNI 74321344-Y i resident a Granollers amb codi postal «08400». 
 -- Les dades no facilitades pots inventar-te-les.
-
+insert into poblacio
+insert into clinica
+insert into metge
+insert into propietari
+insert into animal
+insert into operacios
+insert into mao
 
  
 
@@ -125,10 +126,25 @@ CREATE INDEX ImetgeNom ON Metge(nom);
 -- Realitza les modificacions que facin falta perquè sinó el propietari de la clínica et farà responsable i aniràs a la presó.
 -- Realitza l'exercici utitlizant els deletes i una altre fent una variació en l'estructura de la taula.
 
+-- UTILITZANT DELETES:
+DELETE FROM mao WHERE operacionsNom = 'tiroides';
+DELETE FROM recursos WHERE operacionsNom = 'tiroides';
+DELETE FROM operacions WHERE nom = 'tiroides';
 
+-- MODIFICANT L'ESTRUCTURA:
+ALTER TABLE mao DROP FOREIGN KEY fk_mao_operacions;
+ALTER TABLE mao ADD CONSTRAINT fk_mao_operacions FOREIGN KEY (operacionsNom)
+		REFERENCES operacions(nom)
+        ON UPDATE CASCADE ON DELETE CASCADE;
+        
+ALTER TABLE recursos DROP FOREIGN KEY fk_recursos_operacio;
+ALTER TABLE recursos ADD CONSTRAINT fk_recursos_operacio FOREIGN KEY (operacioNom)
+		REFERENCES operacions(nom)
+        ON UPDATE CASCADE ON DELETE CASCADE;
 
 -- 4	Digues la quantitat de recursos associats a cada operació. 
-
+SELECT operacioNom, COUNT(*) AS QttRecursos FROM recursos 
+	GROUP BY operacioNom;
 
 -- 5	Obtenir el nom i dni dels propietaris de la població de “Granollers”, “Barcelona” i “Canovelles”. 
 
@@ -137,22 +153,51 @@ CREATE INDEX ImetgeNom ON Metge(nom);
 -- 7	Modificar el nom de la clínica amb CIF: “B60147645” a “Guau Guau”. 
 
 -- 8	Veure el nom i raça de tots els animals que ha operat el metge “Smith” durant els anys 2010 i 2017.
-
+SELECT a.nom, a.raca FROM animal a
+	INNER JOIN mao ON a.xip = mao.animalXip
+    INNER JOIN metge m ON m.nif = mao.metgenif
+    WHERE m.nom = 'smith' AND YEAR(mao.data) BETWEEN 2010 AND 2017;
 
 -- 9	Veure nom de l’operació que requereix més temps “Temps previst” 
+SELECT nom FROM operacions WHERE tempsPrevist = (SELECT MAX(tempsprevist) FROM operacions);
+
+-- 9b   Veure el nom de l'operació del Dr. Smith que ha trigat més.
+select max(temps) from mao
+	inner join metge m on m.nif = mao.metgeNIF
+    where m.nom = 'smith';
+    
+-- pas 2: determinar el nom de les operacions que tenen aquest valor de temps màxim calculat.
+SELECT mao.operacionsNom, mao.temps FROM mao
+	INNER JOIN metge m ON m.nif = mao.metgeNIF
+    WHERE m.nom = 'smith' AND mao.temps = (SELECT MAX(temps) FROM mao
+											INNER JOIN metge m ON m.nif = mao.metgeNIF
+											WHERE m.nom = 'smith');
 
 -- 10	Veure quants animals té cada propietari de la ciutat de Barcelona.
 
 -- 11	Es volen eliminar aquells metges que siguin de Granollers, Mollet o del codi postal 08420 o 08480.
+DELETE m.* FROM metge 
+	INNER JOIN poblacio p ON p.codipostal = m.poblaciocodipostal
+    WHERE p.nom IN ('Granollers','Mollet') OR p.codipostal IN ('08420','08100');
 
-
--- 12	Obtenir quina desviació hi ha hagut de cada una de les operacions (de forma individual) segons el temps previst
--- i el temps real invertit. 
+-- 12	Obtenir quina desviació hi ha hagut de cada una de les operacions (de forma individual) segons el temps previst i el temps real invertit. 
 -- Ordena-ho per nom d'operació i temps.
-
+SELECT o.nom, o.tempsPrevist, mao.temps, mao.temps-o.tempsPrevist AS desviacio FROM operacio o
+	INNER JOIN mao ON o.nom = mao.operacionsNom
+    ORDER BY o.nom, desviacio;
 
 -- 13	Obtenir totes les dades de l'operació/operacions que ha tingut una major desviació. 
 -- Utilitzar una vista a partir de la consulta anterior. 
+CREATE VIEW llistatDesviacions AS
+SELECT o.nom, o.tempsPrevist, mao.temps, mao.temps-o.tempsPrevist AS desviacio FROM operacio o
+	INNER JOIN mao ON o.nom = mao.operacionsNom
+    ORDER BY o.nom, desviacio;
+    
+SELECT * FROM llistatDesviacions;
+
+SELECT * FROM llistatDesviacions
+	WHERE desviacio = (SELECT MAX(desviacio) FROM llistatDesviacions);
+
 
 -- 14	El codi postal «08400» és incorrecte. Cal modificar-lo per 08402. 
 
@@ -168,7 +213,16 @@ CREATE INDEX ImetgeNom ON Metge(nom);
 
 -- 17	Actualitzar el pes de l’animal amb xip “FC1234567” de l’operació del dia “12/06/2015” a 6,45 kg 
 -- degut a que hi va haver un error inicial.
+UPDATE mao
+SET pes = 6.45
+WHERE animalXip = 'FC1234567' AND dataMao = '2015-06-12';
 
+-- 17b Cal incrementar un 20% més de temps a totes aquelles operacions de Catarates o Ganglis fetes a la clinica "Cocochan" que hagi operat el Dr. Smith.
+UPDATE mao
+	INNER JOIN metge m ON m.NIF = mao.metgeNIF
+    INNER JOIN clinica c ON c.cif = m.clinicacif
+	SET temps = temps*1.2
+	WHERE m.nom = 'smith' AND operacionsNom IN ('Catarates','Ganglis') AND c.nom = 'Cocochan';
 
 -- 18	Veure quantes operacions va realitzar la clínica “Pets4ever” durant l’any 2013 i 2014.
 -- 19	Augmenta el temps en un 20% d'aquelles operacions de la clínica «Pets4ever» on els animals són de la raça «Husky» o «Bulldog».
@@ -178,7 +232,16 @@ CREATE INDEX ImetgeNom ON Metge(nom);
 
 
 -- 21	Obtenir totes les poblacions que estiguin associades a un metge, a una clínica o a un propietari (utilitzeu una vista).
+CREATE VIEW llistaPoblacionsGenerals AS
+SELECT p.nom FROM poblacio INNER JOIN metge m ON p.codipostal = m.poblaciocodipostal
+UNION
+SELECT p.nom FROM poblacio INNER JOIN clinica c ON p.codipostal = c.poblaciocodipostal
+UNION
+SELECT p.nom FROM poblacio INNER JOIN propietari pr ON p.codipostal = pr.poblaciocodipostal;
 
+SELECT DISTINCT nom FROM llistaPoblacionsGenerals;
+
+    
 
 -- 22	Modificar el temps de totes les operacions de l'any 2015 que ha realitzat el metge «Smith» en un 10%.
 
@@ -193,16 +256,24 @@ CREATE INDEX ImetgeNom ON Metge(nom);
 
 -- 26	Obtenir el preu de cada una de les operacions tenint en compte que el preu de la 
 -- operació augmenta en 0,15€ per minut de més segons el temps previst. Considerar només les operacions que superen el temps previst.
+-- A partir de la vista que ja tenim que es diu llistatDesviacions calculem el cost extra.
+SELECT * FROM llistatDesviacions;
 
+SELECT *, desviacio*0.15 AS facturacioPerAlbert FROM llistatDesviacions
+WHERE desviacio > 0;
 
 
 -- 27	Elimina tots aquells metges que no han realitzat cap operació que siguin de la clínica «Pets4ever». 
+DELETE m.* FROM clinica c LEFT JOIN metge m ON c.cif = m.clinicacif
+	LEFT JOIN mao ON m.nif = mao.metgenif
+    WHERE m.nom = 'Pets4ever' AND mao.metgenif IS NULL;
+
 
 -- 28	Es volen realitzar moltes consultes a partir del nom de raça de l'animal. -- variada
 -- Executa les accions que faries per tal d'optimitzar aquestes consultes
+create index iraca on animal(raca);
 
-
--- 29	Es volen realitzar moltes consultes a partir del nom de raça de l'animal. -- variada
+-- 29	Es volen realitzar moltes consultes a partir del nom de poblacio. -- variada
 -- Executa les accions que faries per tal d'optimitzar aquestes consultes
 
 
